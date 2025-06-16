@@ -1,50 +1,35 @@
 import { SurfaceDeliveryFactory } from "./factories/SurfaceDeliveryFactory.ts";
-import { AirDeliveryFactory } from "./factories/AirDeliveryFactory.ts";
-import { SeaDeliveryFactory } from "./factories/SeaDeliveryFactory.ts";
-import {StandardDelivery} from "./bridge/StandardDelivery.ts";
-import {LocalDelivery} from "./bridge/LocalDelivery.ts";
-import {ExpressDelivery} from "./bridge/ExpressDelivery.ts";
-import {InternationalDelivery} from "./bridge/InternationalDelivery.ts";
-import {DeliverySubject} from "./observer/DeliverySubject.ts";
-import {ConcreteClientObserver} from "./observer/ConcreteClientObserver.ts";
+import { LocalDelivery} from "./bridge/LocalDelivery.ts";
+import { ExpressDelivery } from "./bridge/ExpressDelivery.ts";
+import { DeliverySubject } from "./observer/DeliverySubject.ts";
+import { ConcreteClientObserver } from "./observer/ConcreteClientObserver.ts";
 
 
+console.log("\n=== Delivery System Simulation ===");
+
+// 1: Create the delivery object using Abstract Factory
 const surfaceFactory = new SurfaceDeliveryFactory();
-const airFactory = new AirDeliveryFactory();
-const seaFactory = new SeaDeliveryFactory();
+const deliveryObject = surfaceFactory.createDelivery("S-001");
+console.log(deliveryObject.describe());
 
-// Use factories to create delivery objects
-const surfaceDelivery = surfaceFactory.createDelivery("S-123");
-const airDelivery = airFactory.createDelivery("A-456");
-const seaDelivery = seaFactory.createDelivery("SE-789");
+// 2: Apply a Delivery type (Bridge)
+const localDelivery = new LocalDelivery();
+const deliveryProcess = new ExpressDelivery(localDelivery);
 
-console.log(surfaceDelivery.describe());
-console.log(airDelivery.describe());
-console.log(seaDelivery.describe());
+console.log(deliveryProcess.deliver());
 
-// Local Standard Delivery
-const localStandardDelivery = new StandardDelivery(new LocalDelivery());
-console.log(localStandardDelivery.deliver());
+// 3: Attach observers (Clients) for notifications
+const deliverySubject = new DeliverySubject();
 
-// International Express Delivery
-const internationalExpressDelivery = new ExpressDelivery(new InternationalDelivery());
-console.log(internationalExpressDelivery.deliver());
-
-
-// Test Observer Pattern
-
-// Create a delivery subject
-const delivery = new DeliverySubject();
-
-// Create observers
 const client1 = new ConcreteClientObserver("Client 1");
 const client2 = new ConcreteClientObserver("Client 2");
 
-// Attach observers to the delivery subject
-delivery.subscribe(client1);
-delivery.subscribe(client2);
+deliverySubject.subscribe(client1);
+deliverySubject.subscribe(client2);
 
-// Change status of the delivery
-delivery.setStatus("Created");
-delivery.setStatus("In Transit");
-delivery.setStatus("Delivered");
+console.log("\n--- Simulating Delivery Status Updates ---");
+
+// 4: Simulate status changes and notify clients
+deliverySubject.setStatus("Created");
+deliverySubject.setStatus("In Transit");
+deliverySubject.setStatus("Delivered");
