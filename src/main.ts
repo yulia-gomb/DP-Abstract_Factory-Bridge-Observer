@@ -5,6 +5,8 @@ import {StandardDelivery} from "./bridge/StandardDelivery.ts";
 import {LocalDelivery} from "./bridge/LocalDelivery.ts";
 import {ExpressDelivery} from "./bridge/ExpressDelivery.ts";
 import {InternationalDelivery} from "./bridge/InternationalDelivery.ts";
+import {DeliverySubject} from "./observer/DeliverySubject.ts";
+import {ConcreteClientObserver} from "./observer/ConcreteClientObserver.ts";
 
 
 const surfaceFactory = new SurfaceDeliveryFactory();
@@ -27,3 +29,22 @@ console.log(localStandardDelivery.deliver());
 // International Express Delivery
 const internationalExpressDelivery = new ExpressDelivery(new InternationalDelivery());
 console.log(internationalExpressDelivery.deliver());
+
+
+// Test Observer Pattern
+
+// Create a delivery subject
+const delivery = new DeliverySubject();
+
+// Create observers
+const client1 = new ConcreteClientObserver("Client 1");
+const client2 = new ConcreteClientObserver("Client 2");
+
+// Attach observers to the delivery subject
+delivery.subscribe(client1);
+delivery.subscribe(client2);
+
+// Change status of the delivery
+delivery.setStatus("Created");
+delivery.setStatus("In Transit");
+delivery.setStatus("Delivered");
